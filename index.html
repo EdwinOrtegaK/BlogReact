@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blog Pokemon</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap");
+
+      header {
+        width: 100%;
+        background-color: #333;
+        color: #fff;
+        padding: 1rem 0;
+        text-align: center;
+        font-size: 2rem;
+        position: fixed;
+        top: 0; 
+        left: 0;
+        z-index: 1000;
+        border: 3px solid #ffffff;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      }
+
+      footer {
+        width: 100%;
+        background-color: #333;
+        color: #fff;
+        padding: 1rem 0;
+        text-align: center;
+        position: fixed; 
+        bottom: 0;
+        left: 0; 
+        z-index: 1000;
+        border: 3px solid #ffffff;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+      }
+      
+      main {
+        flex: 1;
+        padding: 2rem;
+        max-width: 800px; 
+        margin: 2rem auto;
+        display: flex; 
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-family: "Roboto", sans-serif;
+        font-size: 12px;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        background: #1488cc;
+        background: -webkit-linear-gradient(to right, #2b32b2, #1488cc);
+        background: linear-gradient(to right, #2b32b2, #1488cc);
+        min-height: 100vh;
+      }
+
+      .blog_post {
+        background: #fff;
+        max-width: 500px;
+        margin: 1rem;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .img_ball {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background: linear-gradient(90deg, #ff9966, #ff5e62);
+      }
+
+      .img_ball img {
+        height: 80px;
+        width: 80px;
+        border-radius: 50%;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .cards {
+        padding: 20px;
+      }
+
+      h1 {
+        margin-bottom: 1rem;
+        color: #333;
+        font-size: 24px;
+      }
+
+      p {
+        margin-bottom: 0.5rem;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #666;
+      }
+
+      @media only screen and (max-width: 650px) {
+        .blog_post {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const Header = () => {
+        const styles = {};
+        return <header style={styles}>BLOG POKEMON</header>;
+      };
+
+      const Footer = () => {
+        const styles = {};
+        return <footer style={styles}>Copyright 2024 UVG</footer>;
+      };
+
+      const Post = ({
+        title,
+        content,
+        pokemon_name,
+        tipo_pokemon,
+        grupo,
+        cualidad,
+        region,
+        descripcion,
+      }) => {
+        return (
+          <div className="blog_post">
+            <div className="img_ball">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Pokebola-pokeball-png-0.png/800px-Pokebola-pokeball-png-0.png"
+                alt={pokemon_name}
+              />
+            </div>
+            <div className="cards">
+              <h1>{title}</h1>
+              <p>Contenido: {content}</p>
+              <p>Nombre: {pokemon_name}</p>
+              <p>Tipo: {tipo_pokemon}</p>
+              <p>Grupo: {grupo}</p>
+              <p>Cualidad: {cualidad}</p>
+              <p>Región: {region}</p>
+              <p>Descripción: {descripcion}</p>
+            </div>
+          </div>
+        );
+      };
+
+      const Posts = () => {
+        const styles = {};
+        const [posts, setPosts] = React.useState([]);
+
+        const getPosts = async () => {
+          const apiResponse = await fetch(
+            "https://api.tiburoncin.lat/22305/posts"
+          );
+          const jsonPosts = await apiResponse.json();
+          const formattedPosts = jsonPosts.map(
+            ({
+              title,
+              content,
+              pokemon_name,
+              tipo_pokemon,
+              grupo,
+              cualidad,
+              region,
+              descripcion,
+            }) => ({
+              title,
+              content,
+              pokemon_name,
+              tipo_pokemon,
+              grupo,
+              cualidad,
+              region,
+              descripcion,
+            })
+          );
+          setPosts(formattedPosts);
+        };
+
+        React.useEffect(() => {
+          getPosts();
+        }, []);
+
+        if (posts.length === 0) {
+          return (
+            <ul style={styles}>
+              <li>Loading...</li>
+            </ul>
+          );
+        }
+
+        return (
+          <ul style={styles}>
+            {posts.map((post) => (
+              <Post
+                key={post.id}
+                title={post.title}
+                content={post.content}
+                pokemon_name={post.pokemon_name}
+                tipo_pokemon={post.tipo_pokemon}
+                grupo={post.grupo}
+                cualidad={post.cualidad}
+                region={post.region}
+                descripcion={post.descripcion}
+              />
+            ))}
+          </ul>
+        );
+      };
+
+      const App = () => {
+        const styles = {};
+        return (
+          <main style={styles}>
+            <Header />
+            <Posts />
+            <Footer />
+          </main>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
